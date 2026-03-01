@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Transformation Leader</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            purple: '#a855f7',
+                            orange: '#f97316',
+                            tg: '#229ED9',
+                            green: '#22c55e',
+                            red: '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --shadow-glow: rgba(0, 0, 0, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.5);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --grid-color-1: rgba(168, 85, 247, 0.05);
+            --grid-color-2: rgba(249, 115, 22, 0.05);
+        }
+
+        .dark {
+            --bg-color: #050505;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --glass-bg: rgba(10, 10, 10, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-glow: rgba(168, 85, 247, 0.1);
+            --card-bg: rgba(20, 20, 20, 0.4);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --grid-color-1: rgba(168, 85, 247, 0.08);
+            --grid-color-2: rgba(249, 115, 22, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow: hidden; /* Force prevent global scroll */
+            touch-action: none; /* Prevent swipe to go back on mobile browsers */
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, var(--grid-color-1) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color-2) 1px, transparent 1px);
+            transition: background-image 0.4s ease;
+        }
+
+        /* Glow Blobs */
+        .glow-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .glow-purple {
+            background: rgba(168, 85, 247, 0.15);
+            width: 60vw;
+            height: 60vw;
+            top: -10vw;
+            left: -10vw;
+        }
+        .glow-orange {
+            background: rgba(249, 115, 22, 0.15);
+            width: 50vw;
+            height: 50vw;
+            bottom: -10vw;
+            right: -10vw;
+        }
+
+        /* UI Patterns */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px var(--shadow-glow);
+            border-radius: 24px;
+            transition: all 0.4s ease;
+        }
+
+        .tech-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .tech-card:hover {
+            border-color: #a855f7;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #a855f7, #f97316);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .slide-topline {
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(to right, #a855f7, transparent, #f97316);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .kbd {
+            font-family: 'Space Mono', monospace;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            border-radius: 9999px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Deck Mechanics */
+        #deck-container {
+            display: flex;
+            width: 900vw;
+            height: 100vh;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Header height + safe area top, Progress bar safe area bottom */
+            padding: 80px 12px 40px 12px; 
+            box-sizing: border-box;
+        }
+
+        .slide-inner {
+            width: 100%;
+            max-width: 1100px;
+            height: 100%; /* Force height constraint */
+            max-height: 100%;
+            overflow: hidden; /* Prevent scrolling entirely */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically if space is available */
+            position: relative;
+        }
+
+        /* Animations */
+        .slide-appear {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .slide.active .slide-appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Delays */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyber-purple selection:text-white">
+
+    <!-- Background -->
+    <div class="bg-grid"></div>
+    <div class="glow-blob glow-purple animate-pulse-slow"></div>
+    <div class="glow-blob glow-orange animate-pulse-slow" style="animation-delay: 3s;"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-panel !rounded-none !border-t-0 !border-l-0 !border-r-0 !bg-opacity-40 px-4 md:px-6 py-4 flex justify-between items-center h-[72px]">
+        <div class="flex items-center gap-3">
+            <img src="https://i.ibb.co/gn7SmgY/866f2500-dd81-4d09-8c0f-2b55c25a3464-removalai-preview.png" alt="Andre AI Tech Logo" class="h-8 md:h-10 w-auto object-contain">
+            <span class="font-mono text-[10px] md:text-xs tracking-widest uppercase hidden sm:block">Andre AI Tech</span>
+        </div>
+        
+        <div class="flex items-center gap-2 md:gap-4">
+            <!-- Left/Right controls -->
+            <div class="flex gap-2">
+                <button onclick="prevSlide()" class="p-2 rounded-full hover:bg-white/10 transition-colors tech-card flex items-center justify-center" aria-label="Previous Slide">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                </button>
+                <button onclick="nextSlide()" class="p-2 rounded-full hover:bg-white/10 transition-colors tech-card flex items-center justify-center" aria-label="Next Slide">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Theme toggle -->
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-white/10 transition-colors ml-1 md:ml-2 flex items-center justify-center" aria-label="Toggle Theme">
+                <i data-lucide="moon" class="w-4 h-4 md:w-5 md:h-5 dark:hidden"></i>
+                <i data-lucide="sun" class="w-4 h-4 md:w-5 md:h-5 hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Deck -->
+    <main id="deck-container">
+        
+        <!-- SLIDE 1: Title -->
+        <section class="slide" id="slide-0">
+            <div class="slide-inner glass-panel p-6 md:p-16 text-center items-center">
+                <div class="slide-topline"></div>
+                
+                <span class="kbd slide-appear mb-3 md:mb-6 text-cyber-purple border-cyber-purple/30 text-[10px] md:text-xs">Founder, Andre AI Technologies</span>
+                
+                <!-- Updated Title Sizes -->
+                <h1 class="font-montserrat font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter uppercase mb-4 md:mb-6 slide-appear delay-100 leading-none">
+                    <span class="whitespace-nowrap">AI Transformation</span> <br>
+                    <span class="text-gradient">Leader</span>
+                </h1>
+                
+                <p class="font-sans text-sm sm:text-lg md:text-2xl text-[var(--text-muted)] max-w-2xl slide-appear delay-200">
+                    Building the Infrastructure of Digital Labor
+                </p>
+                
+                <div class="mt-6 md:mt-12 slide-appear delay-300 w-full max-w-xs md:max-w-md h-1 bg-gradient-to-r from-transparent via-cyber-purple to-transparent opacity-30 mx-auto"></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: The Shift -->
+        <section class="slide" id="slide-1">
+            <div class="slide-inner glass-panel p-4 md:p-12 relative">
+                <div class="slide-topline"></div>
+                <div class="mb-4 md:mb-8 text-center slide-appear shrink-0">
+                    <span class="kbd mb-2 md:mb-4 inline-block text-[10px] md:text-xs">01 / Context</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase">The Shift to <span class="text-gradient">AI-First</span> Companies</h2>
+                    <p class="mt-2 text-[var(--text-muted)] text-[11px] sm:text-sm md:text-lg max-w-3xl mx-auto leading-tight md:leading-normal">Companies are rebuilding their operating systems around AI. AI employees become part of execution. Humans focus on strategy, creativity, and value creation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 mt-2 md:mt-4 slide-appear delay-200 flex-1 min-h-0">
+                    <!-- Left -->
+                    <div class="tech-card p-3 md:p-8 flex flex-col items-center text-center justify-center">
+                        <div class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-[var(--bg-color)] flex items-center justify-center mb-2 md:mb-6 border border-[var(--card-border)] shrink-0">
+                            <i data-lucide="users" class="w-5 h-5 md:w-8 md:h-8 text-cyber-purple"></i>
+                        </div>
+                        <h3 class="font-montserrat font-black text-sm md:text-xl mb-1 md:mb-3">Traditional Ops</h3>
+                        <p class="text-[var(--text-muted)] text-[10px] md:text-sm mb-2 md:mb-6 line-clamp-2">Humans doing mechanical execution and repetitive workflows.</p>
+                        <div class="flex flex-col gap-1 md:gap-2 w-full mt-auto opacity-50 shrink-0">
+                            <div class="h-6 md:h-8 rounded bg-[var(--bg-color)] border border-[var(--card-border)] flex items-center justify-center text-[10px] md:text-xs font-mono">Execution</div>
+                            <div class="h-6 md:h-8 rounded bg-[var(--bg-color)] border border-[var(--card-border)] flex items-center justify-center text-[10px] md:text-xs font-mono hidden md:flex">Execution</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right -->
+                    <div class="tech-card p-3 md:p-8 flex flex-col items-center text-center justify-center relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 md:w-40 md:h-40 bg-cyber-orange/10 blur-3xl rounded-full"></div>
+                        <div class="w-10 h-10 md:w-16 md:h-16 rounded-full bg-[var(--bg-color)] flex items-center justify-center mb-2 md:mb-6 border border-cyber-orange/30 shrink-0">
+                            <i data-lucide="cpu" class="w-5 h-5 md:w-8 md:h-8 text-cyber-orange"></i>
+                        </div>
+                        <h3 class="font-montserrat font-black text-sm md:text-xl mb-1 md:mb-3 relative z-10">AI-First OS</h3>
+                        <p class="text-[var(--text-muted)] text-[10px] md:text-sm mb-2 md:mb-6 relative z-10 line-clamp-2">AI Execution Layer combined with Human Strategy Layer.</p>
+                        <div class="flex flex-col gap-1 md:gap-2 w-full mt-auto relative z-10 shrink-0">
+                            <div class="h-6 md:h-8 rounded bg-cyber-purple/20 border border-cyber-purple/30 flex items-center justify-center text-[10px] md:text-xs font-mono text-cyber-purple">Human Strategy</div>
+                            <div class="h-6 md:h-8 rounded bg-cyber-orange/20 border border-cyber-orange/30 flex items-center justify-center text-[10px] md:text-xs font-mono text-cyber-orange">AI Execution</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: What I Build -->
+        <section class="slide" id="slide-2">
+            <div class="slide-inner glass-panel p-4 lg:p-8 flex flex-col">
+                <div class="slide-topline"></div>
+                <div class="mb-2 md:mb-4 text-center slide-appear shrink-0">
+                    <span class="kbd mb-1 lg:mb-3 inline-block text-[10px] md:text-xs">02 / Architecture</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase">The Core <span class="text-gradient">Infrastructure</span></h2>
+                    <p class="mt-1 text-[var(--text-muted)] text-[11px] sm:text-xs md:text-lg">I build the foundation for AI-First transformation.</p>
+                </div>
+
+                <!-- Constrained relative box strictly preventing overflow -->
+                <div class="relative w-full max-w-4xl mx-auto slide-appear delay-200 flex-1 flex flex-col items-center justify-center min-h-0">
+                    <!-- Desktop connecting lines -->
+                    <svg class="absolute inset-0 w-full h-full opacity-20 hidden md:block" style="z-index: 0;">
+                        <line x1="15%" y1="50%" x2="85%" y2="50%" stroke="currentColor" stroke-width="2" stroke-dasharray="4"/>
+                        <line x1="50%" y1="15%" x2="50%" y2="85%" stroke="currentColor" stroke-width="2" stroke-dasharray="4"/>
+                    </svg>
+
+                    <!-- Safe Height Grid Layout -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 md:grid-rows-3 gap-2 sm:gap-4 relative z-10 w-full justify-items-center place-items-center h-full max-h-[420px]">
+                        
+                        <!-- Top (Methodology) -->
+                        <div class="col-span-1 md:col-start-2 md:row-start-1 tech-card p-2 md:p-3 rounded-xl w-full max-w-[140px] md:max-w-[160px] text-center flex flex-col justify-center h-full">
+                            <i data-lucide="book-open" class="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-cyber-orange"></i>
+                            <h4 class="font-bold text-[10px] md:text-sm mb-0.5 leading-tight">Methodology</h4>
+                            <p class="text-[8px] md:text-xs text-[var(--text-muted)] leading-tight hidden sm:block">Transformation Standards</p>
+                        </div>
+
+                        <!-- Left (Maturity Index) -->
+                        <div class="col-span-1 md:col-start-1 md:row-start-2 tech-card p-2 md:p-3 rounded-xl w-full max-w-[140px] md:max-w-[160px] text-center flex flex-col justify-center h-full">
+                            <i data-lucide="activity" class="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-cyber-purple"></i>
+                            <h4 class="font-bold text-[10px] md:text-sm mb-0.5 leading-tight">Maturity Index</h4>
+                            <p class="text-[8px] md:text-xs text-[var(--text-muted)] leading-tight hidden sm:block">Diagnostics Framework</p>
+                        </div>
+
+                        <!-- Center Core -->
+                        <div class="col-span-2 md:col-span-1 md:col-start-2 md:row-start-2 tech-card p-2 md:p-4 rounded-full w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 flex flex-col items-center justify-center text-center border-cyber-purple/50 shadow-[0_0_20px_rgba(168,85,247,0.2)] bg-[var(--bg-color)] z-10 order-first md:order-none shrink-0">
+                            <i data-lucide="layers" class="w-5 h-5 md:w-6 md:h-6 text-cyber-purple mb-1"></i>
+                            <span class="font-montserrat font-bold text-[10px] md:text-sm leading-tight">AI Platform</span>
+                            <span class="text-[8px] md:text-[10px] text-[var(--text-muted)] mt-0.5">Models, Memory</span>
+                        </div>
+
+                        <!-- Right (AI Employees) -->
+                        <div class="col-span-1 md:col-start-3 md:row-start-2 tech-card p-2 md:p-3 rounded-xl w-full max-w-[140px] md:max-w-[160px] text-center flex flex-col justify-center h-full">
+                            <i data-lucide="bot" class="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-cyber-orange"></i>
+                            <h4 class="font-bold text-[10px] md:text-sm mb-0.5 leading-tight">AI Employees</h4>
+                            <p class="text-[8px] md:text-xs text-[var(--text-muted)] leading-tight hidden sm:block">Role-based Agents</p>
+                        </div>
+
+                        <!-- Bottom (Education) -->
+                        <div class="col-span-1 md:col-start-2 md:row-start-3 tech-card p-2 md:p-3 rounded-xl w-full max-w-[140px] md:max-w-[160px] text-center flex flex-col justify-center h-full">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 text-cyber-purple"></i>
+                            <h4 class="font-bold text-[10px] md:text-sm mb-0.5 leading-tight">Education</h4>
+                            <p class="text-[8px] md:text-xs text-[var(--text-muted)] leading-tight hidden sm:block">Automation & Skills</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Digital Labor -->
+        <section class="slide" id="slide-3">
+            <div class="slide-inner glass-panel p-4 md:p-12">
+                <div class="slide-topline"></div>
+                
+                <div class="mb-4 md:mb-8 text-center slide-appear shrink-0">
+                    <span class="kbd mb-2 md:mb-4 inline-block text-[10px] md:text-xs">03 / Implementation</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase"><span class="text-gradient">Digital</span> Labor</h2>
+                    <p class="mt-1 md:mt-2 text-[var(--text-muted)] text-[11px] sm:text-xs md:text-lg">Role-based AI employees integrated into workflows</p>
+                </div>
+
+                <div class="text-center mb-4 md:mb-8 slide-appear delay-100 shrink-0">
+                    <span class="font-mono text-[9px] md:text-sm px-2 md:px-4 py-1.5 md:py-2 rounded border border-[var(--card-border)] bg-[var(--card-bg)] inline-block max-w-full truncate">
+                        AI employees = SOPs + tools + memory + automation
+                    </span>
+                </div>
+
+                <!-- Denser Grid, smaller items, NO empty space -->
+                <div class="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 slide-appear delay-200 flex-1 min-h-0 items-center max-w-5xl mx-auto w-full">
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="briefcase" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-purple transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Management</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="users" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-orange transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">HR</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="megaphone" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-purple transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Marketing</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="smartphone" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-orange transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">SMM</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="dollar-sign" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-purple transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Sales</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="headset" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-orange transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Support</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-purple transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Analytics</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="pen-tool" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-orange transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Design</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full">
+                        <i data-lucide="code" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-purple transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Development</span>
+                    </div>
+                    <div class="tech-card py-2 px-1 md:p-4 flex flex-col items-center justify-center text-center group min-h-0 h-full lg:col-start-auto md:col-start-3 sm:col-start-2 col-start-2">
+                        <i data-lucide="settings" class="w-4 h-4 md:w-6 md:h-6 mb-1 md:mb-3 text-[var(--text-muted)] group-hover:text-cyber-orange transition-colors shrink-0"></i>
+                        <span class="font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wide truncate w-full">Engineering</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Your Role -->
+        <section class="slide" id="slide-4">
+            <div class="slide-inner glass-panel p-4 md:p-12">
+                <div class="slide-topline"></div>
+                <div class="mb-4 md:mb-8 text-center slide-appear shrink-0">
+                    <span class="kbd mb-2 md:mb-4 inline-block text-[10px] md:text-xs">04 / Ecosystem</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase">Your Role: <span class="text-gradient">Leader</span></h2>
+                    <p class="mt-1 md:mt-2 text-[var(--text-muted)] text-[11px] sm:text-xs md:text-lg">You lead transformation in the market.</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-8 slide-appear delay-200 flex-1 min-h-0 w-full">
+                    
+                    <!-- Left: Leader duties -->
+                    <div class="flex-1 grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full">
+                        <div class="tech-card p-2 md:p-4 flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left gap-2 md:gap-4 min-h-0">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded bg-cyber-purple/20 flex items-center justify-center text-cyber-purple font-mono text-[10px] md:text-xs shrink-0">1</div>
+                            <p class="text-[10px] md:text-sm leading-tight">Run diagnostics</p>
+                        </div>
+                        <div class="tech-card p-2 md:p-4 flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left gap-2 md:gap-4 min-h-0">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded bg-cyber-purple/20 flex items-center justify-center text-cyber-purple font-mono text-[10px] md:text-xs shrink-0">2</div>
+                            <p class="text-[10px] md:text-sm leading-tight">Design strategy</p>
+                        </div>
+                        <div class="tech-card p-2 md:p-4 flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left gap-2 md:gap-4 min-h-0">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded bg-cyber-orange/20 flex items-center justify-center text-cyber-orange font-mono text-[10px] md:text-xs shrink-0">3</div>
+                            <p class="text-[10px] md:text-sm leading-tight">Deploy platform</p>
+                        </div>
+                        <div class="tech-card p-2 md:p-4 flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left gap-2 md:gap-4 border-cyber-orange/50 min-h-0">
+                            <i data-lucide="trending-up" class="w-6 h-6 md:w-8 md:h-8 text-cyber-orange shrink-0"></i>
+                            <p class="text-[10px] md:text-sm font-bold leading-tight">Scale consulting</p>
+                        </div>
+                    </div>
+
+                    <!-- Center: Arrow -->
+                    <div class="hidden md:flex flex-col items-center px-2 shrink-0">
+                        <i data-lucide="arrow-right" class="w-6 h-6 md:w-8 md:h-8 text-[var(--text-muted)]"></i>
+                    </div>
+
+                    <!-- Right: Client Outcome -->
+                    <div class="flex-1 tech-card p-3 md:p-6 border-cyber-purple/30 relative overflow-hidden w-full min-h-0 flex flex-col justify-center">
+                        <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-cyber-purple/10 blur-2xl"></div>
+                        <h3 class="font-mono text-[9px] md:text-xs tracking-widest uppercase mb-2 md:mb-6 text-[var(--text-muted)] text-center md:text-left">Client Outcome</h3>
+                        
+                        <div class="flex flex-row flex-wrap md:flex-col justify-center md:justify-start gap-3 md:gap-4 relative border-t-2 md:border-t-0 md:border-l-2 border-[var(--card-border)] pt-3 md:pt-0 md:pl-6 ml-0 md:ml-3">
+                            <div class="relative md:w-full w-auto text-center md:text-left">
+                                <div class="hidden md:block absolute w-3 h-3 rounded-full bg-[var(--bg-color)] border-2 border-cyber-purple -left-[29px] top-1"></div>
+                                <h4 class="font-bold text-[10px] md:text-sm text-cyber-purple md:text-current">Diagnostics <span class="md:hidden">→</span></h4>
+                            </div>
+                            <div class="relative md:w-full w-auto text-center md:text-left">
+                                <div class="hidden md:block absolute w-3 h-3 rounded-full bg-[var(--bg-color)] border-2 border-cyber-purple -left-[29px] top-1"></div>
+                                <h4 class="font-bold text-[10px] md:text-sm text-cyber-purple md:text-current">Strategy <span class="md:hidden">→</span></h4>
+                            </div>
+                            <div class="relative md:w-full w-auto text-center md:text-left">
+                                <div class="hidden md:block absolute w-3 h-3 rounded-full bg-[var(--bg-color)] border-2 border-cyber-orange -left-[29px] top-1"></div>
+                                <h4 class="font-bold text-[10px] md:text-sm text-cyber-orange md:text-current">Deployment <span class="md:hidden">→</span></h4>
+                            </div>
+                            <div class="relative w-full text-center md:text-left md:mt-2 mt-1">
+                                <div class="hidden md:block absolute w-4 h-4 rounded-full bg-cyber-orange shadow-[0_0_10px_#f97316] -left-[30px] top-1"></div>
+                                <h4 class="font-montserrat font-black text-xs md:text-lg text-cyber-orange uppercase">Measurable Efficiency</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Getting Started (CARDS SIZE FIX) -->
+        <section class="slide" id="slide-5">
+            <div class="slide-inner glass-panel p-4 md:p-8 flex flex-col">
+                <div class="slide-topline"></div>
+                
+                <div class="mb-4 md:mb-8 text-center slide-appear shrink-0">
+                    <span class="kbd mb-2 md:mb-4 inline-block text-[10px] md:text-xs">05 / Roadmap</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase">What Needs to Be <span class="text-gradient">Done</span></h2>
+                </div>
+
+                <div class="relative w-full max-w-5xl mx-auto slide-appear delay-200 flex-1 flex flex-col justify-center min-h-0">
+                    <!-- auto-rows-fr property ensures that ALL cards inside this grid are strictly the exact same height -->
+                    <div class="grid grid-cols-2 lg:grid-cols-5 auto-rows-fr gap-2 sm:gap-4 relative z-10 w-full h-auto">
+                        
+                        <!-- Step 1 -->
+                        <div class="tech-card w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center gap-2 text-center group">
+                            <div class="w-6 h-6 sm:w-10 sm:h-10 shrink-0 rounded-full bg-[var(--bg-color)] border border-cyber-purple text-cyber-purple flex items-center justify-center font-mono text-[10px] sm:text-base font-bold group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(168,85,247,0.2)]">1</div>
+                            <p class="text-[9px] sm:text-xs md:text-sm font-medium leading-tight">Strategy training & sign agreement</p>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="tech-card w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center gap-2 text-center group">
+                            <div class="w-6 h-6 sm:w-10 sm:h-10 shrink-0 rounded-full bg-[var(--bg-color)] border border-[var(--text-muted)] text-[var(--text-main)] flex items-center justify-center font-mono text-[10px] sm:text-base font-bold group-hover:border-cyber-purple transition-colors">2</div>
+                            <p class="text-[9px] sm:text-xs md:text-sm font-medium leading-tight">Set up GTM entry (Landing, Bot)</p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="tech-card w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center gap-2 text-center group">
+                            <div class="w-6 h-6 sm:w-10 sm:h-10 shrink-0 rounded-full bg-[var(--bg-color)] border border-[var(--text-muted)] text-[var(--text-main)] flex items-center justify-center font-mono text-[10px] sm:text-base font-bold group-hover:border-cyber-orange transition-colors">3</div>
+                            <p class="text-[9px] sm:text-xs md:text-sm font-medium leading-tight">Launch diagnostics for clients</p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="tech-card w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center gap-2 text-center group">
+                            <div class="w-6 h-6 sm:w-10 sm:h-10 shrink-0 rounded-full bg-[var(--bg-color)] border border-[var(--text-muted)] text-[var(--text-main)] flex items-center justify-center font-mono text-[10px] sm:text-base font-bold group-hover:border-cyber-orange transition-colors">4</div>
+                            <p class="text-[9px] sm:text-xs md:text-sm font-medium leading-tight">Deliver AI strategies</p>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="tech-card w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center gap-2 text-center group border-cyber-orange/40">
+                            <div class="w-6 h-6 sm:w-10 sm:h-10 shrink-0 rounded-full bg-[var(--bg-color)] border border-cyber-orange text-cyber-orange flex items-center justify-center font-mono text-[10px] sm:text-base font-bold group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(249,115,22,0.2)]">5</div>
+                            <p class="text-[10px] sm:text-xs md:text-sm font-bold text-cyber-orange leading-tight">Close sales & Deploy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Economics -->
+        <section class="slide" id="slide-6">
+            <div class="slide-inner glass-panel p-4 md:p-12">
+                <div class="slide-topline"></div>
+                <div class="mb-4 md:mb-8 text-center slide-appear shrink-0">
+                    <span class="kbd mb-2 md:mb-4 inline-block text-[10px] md:text-xs">06 / Business Model</span>
+                    <h2 class="font-montserrat font-black text-2xl sm:text-4xl md:text-5xl tracking-tight uppercase">How <span class="text-gradient">Economics</span> Work</h2>
+                </div>
+
+                <div class="flex flex-col md:grid md:grid-cols-3 gap-3 md:gap-6 slide-appear delay-200 flex-1 min-h-0 justify-center">
+                    
+                    <!-- Flow Diagram Container -->
+                    <div class="md:col-span-2 tech-card p-3 md:p-8 flex flex-row items-center justify-between gap-1 md:gap-4 relative overflow-hidden min-h-0">
+                        <div class="absolute -left-10 -bottom-10 w-20 h-20 bg-cyber-green/10 blur-2xl rounded-full z-0"></div>
+                        
+                        <div class="z-10 text-center flex-1">
+                            <div class="w-8 h-8 md:w-16 md:h-16 mx-auto rounded-lg md:rounded-xl bg-[var(--bg-color)] border border-[var(--card-border)] flex items-center justify-center mb-1 md:mb-3">
+                                <i data-lucide="building" class="w-4 h-4 md:w-8 md:h-8 text-[var(--text-muted)]"></i>
+                            </div>
+                            <h4 class="font-bold font-montserrat uppercase text-[8px] md:text-base">Client</h4>
+                            <p class="text-[7px] md:text-xs text-[var(--text-muted)] mt-0.5 md:mt-1 hidden sm:block">Pays directly</p>
+                        </div>
+
+                        <div class="z-10 flex flex-col items-center text-cyber-green shrink-0">
+                            <i data-lucide="arrow-right" class="w-3 h-3 md:w-6 md:h-6"></i>
+                            <span class="font-mono text-[7px] md:text-[10px] mt-0.5 md:mt-1 hidden sm:block">$$$</span>
+                        </div>
+
+                        <div class="z-10 text-center flex-1">
+                            <div class="w-12 h-12 md:w-20 md:h-20 mx-auto rounded-lg md:rounded-xl bg-gradient-to-br from-cyber-purple/20 to-cyber-orange/20 border border-cyber-purple/50 flex items-center justify-center mb-1 md:mb-3 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                                <i data-lucide="user-check" class="w-6 h-6 md:w-10 md:h-10 text-white"></i>
+                            </div>
+                            <h4 class="font-bold font-montserrat uppercase text-cyber-purple text-[8px] md:text-base">Leader (You)</h4>
+                            <span class="kbd mt-1 md:mt-2 block border-cyber-orange text-cyber-orange bg-cyber-orange/10 text-[6px] md:text-[10px] px-1 py-0.5 mx-auto w-max">Pricing</span>
+                        </div>
+
+                        <div class="z-10 flex flex-col items-center text-[var(--text-muted)] shrink-0">
+                            <i data-lucide="arrow-right" class="w-3 h-3 md:w-6 md:h-6"></i>
+                            <span class="font-mono text-[7px] md:text-[10px] mt-0.5 md:mt-1 hidden sm:block">Usage</span>
+                        </div>
+
+                        <div class="z-10 text-center flex-1">
+                            <div class="w-8 h-8 md:w-16 md:h-16 mx-auto rounded-lg md:rounded-xl bg-[var(--bg-color)] border border-[var(--card-border)] flex items-center justify-center mb-1 md:mb-3">
+                                <i data-lucide="server" class="w-4 h-4 md:w-8 md:h-8 text-[var(--text-muted)]"></i>
+                            </div>
+                            <h4 class="font-bold font-montserrat uppercase text-[8px] md:text-base">Platform</h4>
+                            <p class="text-[7px] md:text-xs text-[var(--text-muted)] mt-0.5 md:mt-1 hidden sm:block">Transparent</p>
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="tech-card p-3 md:p-6 border-cyber-orange/30 min-h-0 flex flex-col justify-center">
+                        <h4 class="font-mono text-[8px] md:text-xs tracking-widest uppercase mb-2 md:mb-4 text-[var(--text-muted)] text-center md:text-left">Your Package</h4>
+                        <ul class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-4">
+                            <li class="flex items-center md:items-start gap-2">
+                                <i data-lucide="check-circle" class="w-3 h-3 md:w-5 md:h-5 text-cyber-purple shrink-0"></i>
+                                <span class="text-[9px] md:text-sm leading-tight">Platform Access</span>
+                            </li>
+                            <li class="flex items-center md:items-start gap-2">
+                                <i data-lucide="check-circle" class="w-3 h-3 md:w-5 md:h-5 text-cyber-purple shrink-0"></i>
+                                <span class="text-[9px] md:text-sm leading-tight">AI Employees</span>
+                            </li>
+                            <li class="flex items-center md:items-start gap-2">
+                                <i data-lucide="check-circle" class="w-3 h-3 md:w-5 md:h-5 text-cyber-orange shrink-0"></i>
+                                <span class="text-[9px] md:text-sm leading-tight">Education</span>
+                            </li>
+                            <li class="flex items-center md:items-start gap-2 md:pt-4 md:border-t border-[var(--card-border)] col-span-2 md:col-span-1 border-t pt-2">
+                                <i data-lucide="plus" class="w-3 h-3 md:w-5 md:h-5 text-cyber-green shrink-0"></i>
+                                <span class="text-[9px] md:text-sm font-bold leading-tight">Your Consulting Services</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Why This Matters -->
+        <section class="slide" id="slide-7">
+            <div class="slide-inner glass-panel p-6 md:p-16 text-center items-center">
+                <div class="slide-topline"></div>
+                
+                <span class="kbd slide-appear mb-3 md:mb-6 inline-block border-cyber-red/30 text-cyber-red text-[10px] md:text-xs">Not just a trend</span>
+                
+                <h2 class="font-montserrat font-black text-3xl sm:text-5xl md:text-6xl tracking-tighter uppercase mb-4 md:mb-8 slide-appear delay-100 leading-tight">
+                    A Structural <span class="text-gradient">Shift</span>
+                </h2>
+
+                <div class="max-w-3xl mx-auto space-y-3 md:space-y-6 slide-appear delay-200">
+                    <p class="font-sans text-sm sm:text-lg md:text-2xl font-medium">
+                        Digital labor is becoming a new production layer in the economy.
+                    </p>
+                    <p class="text-[var(--text-muted)] text-xs sm:text-base md:text-lg">
+                        AI-First is a fundamental change in how companies operate and scale. 
+                    </p>
+                </div>
+
+                <div class="mt-6 md:mt-12 p-4 md:p-6 tech-card inline-block border-cyber-purple/50 bg-cyber-purple/5 slide-appear delay-300">
+                    <p class="font-mono uppercase tracking-widest text-[9px] sm:text-xs md:text-sm text-cyber-purple font-bold">
+                        Those who lead AI transformation<br>will define the next decade.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Alignment (CTA) -->
+        <section class="slide" id="slide-8">
+            <div class="slide-inner glass-panel p-6 md:p-16 text-center flex flex-col items-center justify-center border-cyber-orange/40">
+                <div class="slide-topline" style="background: linear-gradient(to right, #f97316, transparent, #a855f7)"></div>
+                
+                <h2 class="font-montserrat font-black text-3xl sm:text-5xl md:text-7xl tracking-tighter uppercase mb-6 md:mb-10 slide-appear leading-tight">
+                    If You Are <span class="text-gradient">Ready</span>
+                </h2>
+
+                <ul class="text-left space-y-3 md:space-y-4 mb-6 md:mb-12 slide-appear delay-100 max-w-lg mx-auto font-mono text-[10px] sm:text-sm md:text-base w-full px-4">
+                    <li class="flex items-center gap-3 md:gap-4">
+                        <i data-lucide="zap" class="w-4 h-4 md:w-5 md:h-5 text-cyber-orange shrink-0"></i>
+                        <span>To take responsibility for AI transformation</span>
+                    </li>
+                    <li class="flex items-center gap-3 md:gap-4">
+                        <i data-lucide="zap" class="w-4 h-4 md:w-5 md:h-5 text-cyber-orange shrink-0"></i>
+                        <span>To operate digital labor in your market</span>
+                    </li>
+                    <li class="flex items-center gap-3 md:gap-4">
+                        <i data-lucide="zap" class="w-4 h-4 md:w-5 md:h-5 text-cyber-orange shrink-0"></i>
+                        <span>To help shape the new economy</span>
+                    </li>
+                </ul>
+
+                <p class="text-sm md:text-xl font-bold mb-4 md:mb-8 slide-appear delay-200">Then we are aligned.</p>
+
+                <button class="slide-appear delay-300 group relative px-6 py-3 md:px-8 md:py-4 rounded-full bg-[var(--text-main)] text-[var(--bg-color)] font-montserrat font-bold text-xs md:text-base uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+                    <span class="relative z-10 flex items-center gap-2">
+                        Start Training
+                        <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform"></i>
+                    </span>
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyber-purple to-cyber-orange opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Progress Bar & Footer -->
+    <footer class="fixed bottom-0 left-0 w-full z-50 p-4 md:p-6 flex flex-col items-center pointer-events-none">
+        <div class="w-full max-w-4xl h-1 bg-[var(--card-border)] rounded-full overflow-hidden mb-1 md:mb-2">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-cyber-purple to-cyber-orange transition-all duration-300 w-0 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+        </div>
+        <div class="font-mono text-[8px] md:text-[10px] text-[var(--text-muted)] uppercase tracking-widest">
+            Slide <span id="current-slide-num" class="text-[var(--text-main)]">1</span> of 9
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            htmlElement.classList.remove('dark');
+        } else {
+            htmlElement.classList.add('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // Slide Deck Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const deckContainer = document.getElementById('deck-container');
+        const progressBar = document.getElementById('progress-bar');
+        const currentSlideNum = document.getElementById('current-slide-num');
+
+        function updateSlide() {
+            deckContainer.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            const progress = (currentSlide / (totalSlides - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+            currentSlideNum.innerText = currentSlide + 1;
+
+            slides.forEach((slide, index) => {
+                if(index === currentSlide) {
+                    setTimeout(() => slide.classList.add('active'), 100);
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        updateSlide();
+
+        // Key Nav
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Swipe Nav
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) nextSlide();
+            if (touchEndX > touchStartX + 50) prevSlide();
+        }, {passive: true});
+    </script>
+</body>
+</html>
