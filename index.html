@@ -1760,44 +1760,32 @@
             '1183647878', '1183647963'
         ];
 
-        let player1 = null, player2 = null;
-        let activePlayerIndex = 1; // 1 или 2
+        let player = null;
+        let loadToken = 0; // защита от race-condition при быстром переключении
         let overlayTimeout;
-
-        function getActivePlayer() {
-            return activePlayerIndex === 1 ? player1 : player2;
-        }
 
         function triggerOverlayAutoFade() {
             const overlay = document.getElementById('video-overlay');
-            if (!overlay) return;
+            if (!overlay || !player) return;
             overlay.classList.remove('opacity-0');
             clearTimeout(overlayTimeout);
-
-            let currentP = getActivePlayer();
-            if (currentP) {
-                currentP.getPaused().then(paused => {
-                    if (!paused) {
-                        overlayTimeout = setTimeout(() => {
-                            overlay.classList.add('opacity-0');
-                        }, 1500);
-                    }
-                });
-            }
+            player.getPaused().then(paused => {
+                if (!paused) {
+                    overlayTimeout = setTimeout(() => overlay.classList.add('opacity-0'), 1500);
+                }
+            }).catch(() => {});
         }
 
-        function setupPlayerEvents(player) {
-            player.on('ended', function() {
-                if (currentSlide < totalSlides - 1) {
-                    nextSlide();
-                }
+        function setupPlayerEvents(p) {
+            p.on('ended', () => {
+                if (currentSlide < totalSlides - 1) nextSlide();
             });
-            player.on('play', function() {
+            p.on('play', () => {
                 const icon = document.getElementById('video-icon');
                 if (icon) icon.className = 'ph-fill ph-pause-circle text-4xl md:text-6xl drop-shadow-md';
                 triggerOverlayAutoFade();
             });
-            player.on('pause', function() {
+            p.on('pause', () => {
                 const icon = document.getElementById('video-icon');
                 if (icon) icon.className = 'ph-fill ph-play-circle text-4xl md:text-6xl drop-shadow-md';
                 const overlay = document.getElementById('video-overlay');
@@ -1808,8 +1796,29 @@
 
         function updateProgress() {
             if (!progressBar) return;
-            const progress = ((currentSlide + 1) / totalSlides) * 100;
-            progressBar.style.width = `${progress}%`;
+            progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+        }
+
+        function switchVideo(slideIdx) {
+            if (!player) return;
+            const loader = document.getElementById('video-loader');
+            if (loader) loader.classList.remove('opacity-0');
+
+            const myToken = ++loadToken;
+            const hideLoader = () => { if (loader) loader.classList.add('opacity-0'); };
+
+            player.loadVideo(videoIds[slideIdx]).then(() => {
+                if (myToken !== loadToken) return; // более свежий запрос уже в пути
+                return player.play();
+            }).then(() => {
+                if (myToken !== loadToken) return;
+                hideLoader();
+                triggerOverlayAutoFade();
+            }).catch((err) => {
+                if (myToken !== loadToken) return;
+                console.warn('Vimeo switch error:', err);
+                hideLoader();
+            });
         }
 
         window.updateSlides = function() {
@@ -1834,29 +1843,7 @@
             if (navPrev) navPrev.style.display = currentSlide === 0 ? 'none' : 'flex';
             if (navNext) navNext.style.display = currentSlide === totalSlides - 1 ? 'none' : 'flex';
 
-            if (!exportMode && player1 && player2) {
-                const loader = document.getElementById('video-loader');
-                if (loader) loader.classList.remove('opacity-0');
-
-                const targetPlayer = activePlayerIndex === 1 ? player2 : player1;
-                const currentPlayer = activePlayerIndex === 1 ? player1 : player2;
-                const targetContainer = activePlayerIndex === 1 ? document.getElementById('vimeo-container-2') : document.getElementById('vimeo-container-1');
-                const currentContainer = activePlayerIndex === 1 ? document.getElementById('vimeo-container-1') : document.getElementById('vimeo-container-2');
-
-                targetPlayer.loadVideo(videoIds[currentSlide]).then(() => {
-                    targetPlayer.play().then(() => {
-                        targetContainer.style.opacity = '1';
-                        targetContainer.style.zIndex = '10';
-                        currentContainer.style.opacity = '0';
-                        currentContainer.style.zIndex = '0';
-
-                        currentPlayer.pause();
-                        activePlayerIndex = activePlayerIndex === 1 ? 2 : 1;
-                        if (loader) loader.classList.add('opacity-0');
-                        triggerOverlayAutoFade();
-                    }).catch(() => { if (loader) loader.classList.add('opacity-0'); });
-                }).catch(() => { if (loader) loader.classList.add('opacity-0'); });
-            }
+            if (!exportMode && player) switchVideo(currentSlide);
         };
 
         window.nextSlide = function() { if (currentSlide < totalSlides - 1) { currentSlide++; updateSlides(); } };
@@ -1867,12 +1854,23 @@
             setTimeout(() => this.style.display = 'none', 500);
             if (!exportMode) {
                 document.getElementById('video-bubble').style.display = 'block';
-                const opts = { autoplay: false, controls: false, dnt: true, muted: false };
-                player1 = new Vimeo.Player('vimeo-container-1', { ...opts, id: videoIds[0] });
-                player2 = new Vimeo.Player('vimeo-container-2', { ...opts, id: videoIds[1] });
-                setupPlayerEvents(player1);
-                setupPlayerEvents(player2);
-                player1.play().then(() => triggerOverlayAutoFade());
+                // Скрываем второй контейнер (он больше не нужен)
+                const c2 = document.getElementById('vimeo-container-2');
+                if (c2) c2.style.display = 'none';
+                const c1 = document.getElementById('vimeo-container-1');
+                if (c1) { c1.style.opacity = '1'; c1.style.zIndex = '10'; }
+
+                player = new Vimeo.Player('vimeo-container-1', {
+                    id: videoIds[0],
+                    autoplay: false,
+                    controls: false,
+                    dnt: true,
+                    muted: false
+                });
+                setupPlayerEvents(player);
+                player.play().then(() => triggerOverlayAutoFade()).catch(err => {
+                    console.warn('Initial play failed:', err);
+                });
             }
         });
 
@@ -1885,8 +1883,7 @@
         if (videoOverlay) {
             videoOverlay.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const p = getActivePlayer();
-                if (p) p.getPaused().then(paused => paused ? p.play() : p.pause());
+                if (player) player.getPaused().then(paused => paused ? player.play() : player.pause());
             });
         }
 
