@@ -1876,6 +1876,17 @@
                 const overlay = document.getElementById('video-overlay');
                 if (overlay) overlay.classList.add('opacity-0');
                 clearTimeout(overlayTimeout);
+                // Видео реально играет — гарантированно прячем лоадер
+                const loader = document.getElementById('video-loader');
+                if (loader) loader.classList.add('opacity-0');
+            });
+            p.on('timeupdate', () => {
+                // Дополнительный предохранитель: если вдруг 'play' не отработал,
+                // но таймкод идёт — значит воспроизведение реально идёт
+                const loader = document.getElementById('video-loader');
+                if (loader && !loader.classList.contains('opacity-0')) {
+                    loader.classList.add('opacity-0');
+                }
             });
             p.on('pause', () => {
                 const icon = document.getElementById('video-icon');
