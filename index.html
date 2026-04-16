@@ -1873,7 +1873,9 @@
             p.on('play', () => {
                 const icon = document.getElementById('video-icon');
                 if (icon) icon.className = 'ph-fill ph-pause-circle text-4xl md:text-6xl drop-shadow-md';
-                triggerOverlayAutoFade();
+                const overlay = document.getElementById('video-overlay');
+                if (overlay) overlay.classList.add('opacity-0');
+                clearTimeout(overlayTimeout);
             });
             p.on('pause', () => {
                 const icon = document.getElementById('video-icon');
@@ -1904,7 +1906,7 @@
                 return player.play();
             }).then(() => {
                 if (myToken !== loadToken) return;
-                triggerOverlayAutoFade();
+                // Оверлей с иконкой паузы намеренно не показываем — раздражает мигание
             }).catch((err) => {
                 if (myToken !== loadToken) return;
                 console.warn('Vimeo switch error:', err);
