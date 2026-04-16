@@ -1916,7 +1916,9 @@
         ];
 
         let player = null;
-        let loadToken = 0; // защита от race-condition при быстром переключении
+        let isLoadingVideo = false;       // сейчас выполняется loadVideo → play()
+        let desiredSlideIdx = -1;         // последний запрошенный слайд (может отличаться от currentSlide при быстром листании)
+        let loadedSlideIdx = -1;          // слайд, который реально загружен в плеер
         let overlayTimeout;
 
         function triggerOverlayAutoFade() {
@@ -1967,47 +1969,81 @@
             progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
         }
 
-        function switchVideo(slideIdx) {
-            if (!player) return;
+        function showLoaderInstant() {
             const loader = document.getElementById('video-loader');
+            if (!loader) return;
+            // Моментальный показ без 300мс fade-in, иначе в эти 300мс видно чёрное мерцание
+            loader.style.transition = 'none';
+            loader.classList.remove('opacity-0');
+            void loader.offsetWidth;
+            loader.style.transition = '';
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('video-loader');
+            if (loader) loader.classList.add('opacity-0');
+        }
+
+        function showPlayPrompt() {
             const overlay = document.getElementById('video-overlay');
             const icon = document.getElementById('video-icon');
+            if (overlay) overlay.classList.remove('opacity-0');
+            if (icon) icon.className = 'ph-fill ph-play-circle text-4xl md:text-6xl drop-shadow-md';
+        }
 
-            // Показываем лоадер МОМЕНТАЛЬНО (без 300мс fade-in) — иначе сквозь полупрозрачный
-            // лоадер видно черное мерцание iframe в момент loadVideo
-            if (loader) {
-                loader.style.transition = 'none';
-                loader.classList.remove('opacity-0');
-                // Форсируем reflow, чтобы стиль применился до возврата transition
-                void loader.offsetWidth;
-                loader.style.transition = '';
-            }
-            // Прячем возможный старый play-overlay, чтобы он не торчал поверх новой загрузки
+        // Публичное API: «переключи на этот слайд». Сериализует вызовы Vimeo loadVideo,
+        // чтобы быстрые клики подряд не ломали внутреннее состояние плеера.
+        function switchVideo(slideIdx) {
+            if (!player) return;
+            desiredSlideIdx = slideIdx;
+            // Лоадер и сброс старого play-overlay — сразу, для визуальной реактивности
+            showLoaderInstant();
+            const overlay = document.getElementById('video-overlay');
             if (overlay) overlay.classList.add('opacity-0');
+            // Если сейчас уже идёт загрузка — она сама подхватит актуальный desiredSlideIdx по завершению
+            if (!isLoadingVideo) runLoadCycle();
+        }
 
-            const myToken = ++loadToken;
-            const hideLoader = () => { if (loader) loader.classList.add('opacity-0'); };
-            const showPlayPrompt = () => {
-                // Autoplay заблокирован — показываем кнопку play, чтобы пользователь мог кликнуть
-                if (overlay) overlay.classList.remove('opacity-0');
-                if (icon) icon.className = 'ph-fill ph-play-circle text-4xl md:text-6xl drop-shadow-md';
-            };
+        function runLoadCycle() {
+            if (!player || desiredSlideIdx < 0) return;
+            if (desiredSlideIdx === loadedSlideIdx) {
+                // Уже загружено именно то, что нужно — просто перезапустим воспроизведение
+                isLoadingVideo = false;
+                player.play().catch(() => showPlayPrompt());
+                return;
+            }
 
-            player.loadVideo(videoIds[slideIdx]).then(() => {
-                if (myToken !== loadToken) return; // более свежий запрос уже в пути
-                // Видео загружено, пытаемся запустить воспроизведение
+            const targetIdx = desiredSlideIdx;
+            isLoadingVideo = true;
+
+            player.loadVideo(videoIds[targetIdx]).then(() => {
+                // Запуск воспроизведения
                 return player.play();
             }).then(() => {
-                if (myToken !== loadToken) return;
-                // play() разрешён — видео реально играет, прячем лоадер
-                hideLoader();
+                finalizeCycle(targetIdx, null);
             }).catch((err) => {
-                if (myToken !== loadToken) return;
+                finalizeCycle(targetIdx, err);
+            });
+        }
+
+        function finalizeCycle(loadedIdx, err) {
+            isLoadingVideo = false;
+            loadedSlideIdx = err ? -1 : loadedIdx;
+
+            if (desiredSlideIdx !== loadedIdx) {
+                // Пока грузили текущее — пользователь уже ушёл дальше. Грузим финальный слайд.
+                runLoadCycle();
+                return;
+            }
+
+            // Пришли туда, куда хотел пользователь
+            if (err) {
                 console.warn('Vimeo switch error:', err);
                 hideLoader();
-                // Если play() был отклонён autoplay-политикой — покажем prompt
                 showPlayPrompt();
-            });
+            } else {
+                hideLoader();
+            }
         }
 
         window.updateSlides = function() {
@@ -2057,8 +2093,12 @@
                     muted: false
                 });
                 setupPlayerEvents(player);
+                // Начальное состояние: в плеере загружено видео слайда 0
+                loadedSlideIdx = 0;
+                desiredSlideIdx = 0;
                 player.play().then(() => triggerOverlayAutoFade()).catch(err => {
                     console.warn('Initial play failed:', err);
+                    showPlayPrompt();
                 });
             }
         });
