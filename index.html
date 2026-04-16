@@ -1905,23 +1905,36 @@
         function switchVideo(slideIdx) {
             if (!player) return;
             const loader = document.getElementById('video-loader');
+            const overlay = document.getElementById('video-overlay');
+            const icon = document.getElementById('video-icon');
+
+            // Показываем лоадер на время реальной загрузки
             if (loader) loader.classList.remove('opacity-0');
+            // Прячем возможный старый play-overlay, чтобы он не торчал поверх новой загрузки
+            if (overlay) overlay.classList.add('opacity-0');
 
             const myToken = ++loadToken;
             const hideLoader = () => { if (loader) loader.classList.add('opacity-0'); };
+            const showPlayPrompt = () => {
+                // Autoplay заблокирован — показываем кнопку play, чтобы пользователь мог кликнуть
+                if (overlay) overlay.classList.remove('opacity-0');
+                if (icon) icon.className = 'ph-fill ph-play-circle text-4xl md:text-6xl drop-shadow-md';
+            };
 
             player.loadVideo(videoIds[slideIdx]).then(() => {
                 if (myToken !== loadToken) return; // более свежий запрос уже в пути
-                // Видео загружено — прячем лоадер сразу, чтобы он не перекрывал уже играющее видео
-                hideLoader();
+                // Видео загружено, пытаемся запустить воспроизведение
                 return player.play();
             }).then(() => {
                 if (myToken !== loadToken) return;
-                // Оверлей с иконкой паузы намеренно не показываем — раздражает мигание
+                // play() разрешён — видео реально играет, прячем лоадер
+                hideLoader();
             }).catch((err) => {
                 if (myToken !== loadToken) return;
                 console.warn('Vimeo switch error:', err);
                 hideLoader();
+                // Если play() был отклонён autoplay-политикой — покажем prompt
+                showPlayPrompt();
             });
         }
 
