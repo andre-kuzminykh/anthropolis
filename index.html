@@ -256,7 +256,7 @@
         </div>
 
         <!-- Спиннер загрузки -->
-        <div id="video-loader" class="absolute inset-0 flex items-center justify-center bg-black/60 z-30 transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div id="video-loader" class="absolute inset-0 flex items-center justify-center bg-black z-30 transition-opacity duration-300 opacity-0 pointer-events-none">
             <i class="ph-bold ph-spinner animate-spin text-4xl md:text-5xl text-solar"></i>
         </div>
     </div>
@@ -531,7 +531,7 @@
                 </div>
                 <div class="bg-white border border-grayBase p-3 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-2 md:gap-5 h-full w-full hover:border-solar transition-colors text-center sm:text-left">
                     <div class="w-10 h-10 md:w-14 md:h-14 bg-solar/20 flex items-center justify-center rounded-full text-black shrink-0"><i class="ph-fill ph-image text-lg md:text-2xl"></i></div>
-                    <div class="mt-1"><h3 class="font-bold text-black text-[11px] md:text-lg mb-0.5 md:mb-2">Мультимодал.</h3><p class="text-[8px] md:text-sm text-black/60 hidden sm:block">Понимает текст, голос, видео и таблицы</p></div>
+                    <div class="mt-1"><h3 class="font-bold text-black text-[11px] md:text-lg mb-0.5 md:mb-2">Мультимодальность</h3><p class="text-[8px] md:text-sm text-black/60 hidden sm:block">Понимает текст, голос, видео и таблицы</p></div>
                 </div>
             </div>
         </div>
@@ -612,7 +612,7 @@
                 <div class="relative pl-5 md:pl-12">
                     <div class="absolute -left-[11px] md:-left-[18px] top-0 w-5 h-5 md:w-8 md:h-8 bg-solar rounded-full border-4 border-white shadow-lg"></div>
                     <span class="text-solar bg-black px-2 md:px-3 py-0.5 md:py-1 rounded-lg font-black text-[8px] md:text-xs mb-1 md:mb-3 inline-block uppercase tracking-widest">в 2017+</span>
-                    <h3 class="text-base md:text-3xl font-black text-black leading-tight">Автономные Агенты</h3>
+                    <h3 class="text-base md:text-3xl font-black text-black leading-tight">LLM + Автономные Агенты</h3>
                     <p class="text-[11px] md:text-lg text-black/80 font-medium mt-1 md:mt-2">Понимают контекст, рассуждают и используют инструменты</p>
                 </div>
             </div>
@@ -1821,6 +1821,71 @@
                         </p>
                     </div>
                 </div>
+
+                <button id="open-quiz-btn" type="button" class="mt-8 md:mt-10 inline-flex items-center justify-center gap-2 md:gap-3 bg-solar text-black font-black text-sm md:text-xl px-6 md:px-10 py-3 md:py-5 rounded-full shadow-[0_0_30px_rgba(53,240,199,0.4)] hover:scale-105 transition-transform uppercase tracking-widest">
+                    <i class="ph-fill ph-graduation-cap text-lg md:text-2xl"></i>
+                    Пройти тест
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно теста -->
+    <div id="quiz-modal" class="fixed inset-0 z-[10001] bg-black text-white hidden flex-col overflow-y-auto">
+        <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-14 flex flex-col min-h-full">
+            <!-- Шапка -->
+            <div class="flex items-center justify-between mb-6 md:mb-10 shrink-0">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <div class="w-9 h-9 md:w-12 md:h-12 bg-solar rounded-full flex items-center justify-center shadow-md"><i class="ph-fill ph-graduation-cap text-lg md:text-2xl text-black"></i></div>
+                    <div>
+                        <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50">Финальный тест</p>
+                        <p id="quiz-progress" class="text-sm md:text-lg font-black text-white">Вопрос 1 из 10</p>
+                    </div>
+                </div>
+                <button id="quiz-close-btn" type="button" class="w-9 h-9 md:w-11 md:h-11 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors text-white"><i class="ph-bold ph-x text-lg md:text-2xl"></i></button>
+            </div>
+
+            <!-- Прогресс-бар -->
+            <div class="w-full h-1 md:h-1.5 bg-white/10 rounded-full overflow-hidden mb-6 md:mb-10">
+                <div id="quiz-progress-bar" class="h-full bg-solar rounded-full transition-all duration-300" style="width: 10%;"></div>
+            </div>
+
+            <!-- Блок вопроса -->
+            <div id="quiz-question-block" class="flex-1 flex flex-col">
+                <h2 id="quiz-question-text" class="text-base sm:text-xl md:text-3xl font-black leading-tight mb-6 md:mb-10"></h2>
+                <div id="quiz-options" class="flex flex-col gap-2 md:gap-3 mb-6 md:mb-8"></div>
+                <div id="quiz-explanation" class="hidden bg-white/5 border border-white/10 rounded-[20px] md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8">
+                    <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                        <i id="quiz-explanation-icon" class="text-xl md:text-2xl"></i>
+                        <h3 id="quiz-explanation-title" class="font-black text-sm md:text-lg"></h3>
+                    </div>
+                    <p id="quiz-explanation-text" class="text-[11px] md:text-base text-white/80 leading-snug md:leading-relaxed"></p>
+                </div>
+                <button id="quiz-next-btn" type="button" class="hidden bg-solar text-black font-black text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-full shadow-lg hover:scale-[1.02] transition-transform uppercase tracking-widest self-start">
+                    Далее <i class="ph-bold ph-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- Блок результата -->
+            <div id="quiz-result-block" class="hidden flex-1 flex flex-col items-center justify-center text-center py-8">
+                <div id="quiz-result-icon-wrap" class="w-20 h-20 md:w-28 md:h-28 rounded-full flex items-center justify-center mb-5 md:mb-8 shadow-2xl">
+                    <i id="quiz-result-icon" class="text-4xl md:text-6xl"></i>
+                </div>
+                <p class="text-[10px] md:text-sm font-bold uppercase tracking-widest text-white/50 mb-2 md:mb-3">Ваш результат</p>
+                <div class="mb-3 md:mb-5">
+                    <span id="quiz-result-score" class="text-5xl md:text-7xl font-black text-solar"></span>
+                    <span class="text-xl md:text-3xl font-black text-white/40"> / 10</span>
+                </div>
+                <h3 id="quiz-result-title" class="text-lg md:text-3xl font-black mb-2 md:mb-4"></h3>
+                <p id="quiz-result-desc" class="text-xs md:text-base text-white/70 max-w-xl mx-auto mb-8 md:mb-10"></p>
+                <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+                    <button id="quiz-restart-btn" type="button" class="bg-solar text-black font-black text-sm md:text-base px-6 md:px-8 py-3 md:py-4 rounded-full shadow-lg hover:scale-[1.02] transition-transform uppercase tracking-widest">
+                        <i class="ph-bold ph-arrow-clockwise mr-1"></i> Пройти ещё раз
+                    </button>
+                    <button id="quiz-finish-btn" type="button" class="bg-white/10 hover:bg-white/20 text-white font-bold text-sm md:text-base px-6 md:px-8 py-3 md:py-4 rounded-full transition-colors uppercase tracking-widest">
+                        Закрыть
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1908,8 +1973,15 @@
             const overlay = document.getElementById('video-overlay');
             const icon = document.getElementById('video-icon');
 
-            // Показываем лоадер на время реальной загрузки
-            if (loader) loader.classList.remove('opacity-0');
+            // Показываем лоадер МОМЕНТАЛЬНО (без 300мс fade-in) — иначе сквозь полупрозрачный
+            // лоадер видно черное мерцание iframe в момент loadVideo
+            if (loader) {
+                loader.style.transition = 'none';
+                loader.classList.remove('opacity-0');
+                // Форсируем reflow, чтобы стиль применился до возврата transition
+                void loader.offsetWidth;
+                loader.style.transition = '';
+            }
             // Прячем возможный старый play-overlay, чтобы он не торчал поверх новой загрузки
             if (overlay) overlay.classList.add('opacity-0');
 
@@ -2031,6 +2103,287 @@
 
         if (exportMode) body.classList.add('pdf-export-mode');
         else updateSlides();
+
+        // ==================== ТЕСТ ====================
+        const quizQuestions = [
+            {
+                q: 'Чем принципиально отличается AI-First компания от той, которая просто использует AI как инструмент?',
+                options: [
+                    'Имеет больше бюджета на IT-инфраструктуру',
+                    'AI встроен в ядро бизнеса: управляет процессами и принимает решения, а люди становятся менеджерами',
+                    'Нанимает больше AI-инженеров и дата-сайентистов',
+                    'Использует несколько разных LLM одновременно'
+                ],
+                correct: 1,
+                explanation: 'В AI-First компании AI — не просто инструмент, а часть операционной системы бизнеса: он управляет процессами и принимает решения на всех уровнях. Роль человека меняется — он ставит цели, контролирует результат и обучает AI.'
+            },
+            {
+                q: 'Что делает AI-агента субъектом, а не просто программой?',
+                options: [
+                    'Способность писать и исполнять код',
+                    'Наличие подключения к внешним сервисам',
+                    'Самостоятельность: понимает контекст, принимает решения и действует для достижения цели',
+                    'Наличие современного пользовательского интерфейса'
+                ],
+                correct: 2,
+                explanation: 'AI-агент — это субъект, способный самостоятельно решать задачи. Он не просто отвечает на запрос — он понимает контекст, сам разбивает задачу на подзадачи, адаптируется к изменениям и действует.'
+            },
+            {
+                q: 'Из каких трёх базовых элементов состоит любой AI-агент?',
+                options: [
+                    'Промпт, модель и база данных',
+                    'Восприятие, мышление и действие',
+                    'Входной слой, скрытый слой и выходной слой',
+                    'Память, процессор и интерфейс'
+                ],
+                correct: 1,
+                explanation: 'Восприятие — получение данных из внешнего мира. Мышление — анализ и планирование через LLM («мозг»). Действие — выполнение конкретных шагов в системах. Именно эта связка превращает AI из инструмента в полноценного участника процесса.'
+            },
+            {
+                q: 'Какое свойство AI-агентов описывает их способность действовать на опережение, предлагая решения и инициируя действия?',
+                options: [
+                    'Автономность',
+                    'Реактивность',
+                    'Проактивность',
+                    'Мультимодальность'
+                ],
+                correct: 2,
+                explanation: 'Проактивность — одно из шести ключевых свойств агентов. Остальные пять: автономность (работа без контроля), реактивность (адаптация в реальном времени), обучаемость (улучшение на опыте), взаимодействие (работа с людьми и агентами) и мультимодальность (текст, изображения, видео, аудио).'
+            },
+            {
+                q: 'На каком уровне развития AI мы сейчас находимся и к чему движется развитие?',
+                options: [
+                    'На уровне 1 (чат-боты), движемся к уровню 2 (рассуждающие модели)',
+                    'На уровне 2 (рассуждающие модели), движемся к уровню 3 (автономные агенты)',
+                    'На уровне 3 (автономные агенты), движемся к уровню 5 (мультиагентные системы)',
+                    'На уровне 5 (мультиагентные системы), достигли предела развития'
+                ],
+                correct: 2,
+                explanation: 'Мы сейчас на третьем уровне — автономные агенты умеют ставить цели, строить планы и выполнять задачи. Развитие движется к пятому уровню — мультиагентным системам, где множество агентов взаимодействуют как команда или целая организация.'
+            },
+            {
+                q: 'На каком из трёх типов процессов — RUN, CHANGE или DISRUPT — сфокусирован курс и почему?',
+                options: [
+                    'На DISRUPT, потому что это самое инновационное направление с созданием новых бизнес-моделей',
+                    'На CHANGE, потому что именно оптимизация даёт самый быстрый эффект',
+                    'На RUN, потому что именно там AI даёт максимальный и измеримый бизнес-эффект',
+                    'Равномерно на всех трёх типах процессов'
+                ],
+                correct: 2,
+                explanation: 'RUN — это текущие стабильные процессы: бухгалтерия, поддержка, логистика. Именно здесь AI даёт финансовый эффект за счёт автоматизации рутины и снижения ошибок. CHANGE — помощь в принятии решений, DISRUPT — инновации и новые продукты.'
+            },
+            {
+                q: 'В каком порядке бизнес проходит три ключевые трансформации?',
+                options: [
+                    'Цифровая → Agile → AI-трансформация',
+                    'Agile → Цифровая → AI-трансформация',
+                    'AI → Agile → Цифровая',
+                    'Agile → AI → Цифровая трансформация'
+                ],
+                correct: 1,
+                explanation: 'Сначала Agile — переход от жёсткой иерархии к гибким кросс-функциональным командам. Затем цифровая — появляются данные, ERP/CRM-системы, data-driven решения. И наконец AI-трансформация — AI сам принимает решения и управляет процессами (intelligence-driven).'
+            },
+            {
+                q: 'Чем AI-Native отличается от AI-First?',
+                options: [
+                    'AI-Native использует большее количество моделей',
+                    'В AI-First AI встроен в операционную модель компании, а в AI-Native сам AI и есть продукт бизнеса',
+                    'Это синонимы — разное название одного и того же',
+                    'AI-Native — более ранний, устаревший уровень зрелости'
+                ],
+                correct: 1,
+                explanation: 'AI-Driven — AI как инструмент (решения принимает человек). AI-First — AI встроен в операционную модель и управляет процессами. AI-Native — самый высокий уровень: AI и есть сам продукт бизнеса (например, OpenAI).'
+            },
+            {
+                q: 'Из скольких ключевых блоков состоит AI-индекс зрелости и какие из перечисленных соответствуют правильному набору?',
+                options: [
+                    '5 блоков: данные, модели, люди, стратегия и инфраструктура',
+                    '4 блока: стратегия, данные, модели и люди',
+                    '7 блоков: стратегия, люди и культура, инфраструктура, данные, модели, внедрение AI и R&D',
+                    '10 блоков — по одному на каждую функцию компании'
+                ],
+                correct: 2,
+                explanation: 'AI-индекс зрелости строится из 7 ключевых блоков, каждый оценивается по 5 критериям: (1) стратегия и управление, (2) люди и культура, (3) инфраструктура, (4) данные, (5) модели, (6) внедрение AI, (7) R&D.'
+            },
+            {
+                q: 'Что такое AgentOps и какую проблему он решает?',
+                options: [
+                    'Набор готовых AI-агентов, которых можно купить и внедрить',
+                    'Специальный отдел в компании, занимающийся разработкой AI',
+                    'Фреймворк-цикл (анализ → разработка → внедрение → обучение → тесты → мониторинг), превращающий эксперименты с AI в управляемый и масштабируемый процесс',
+                    'Новая модель от OpenAI для создания агентов'
+                ],
+                correct: 2,
+                explanation: 'AgentOps превращает AI из разовых экспериментов в системный процесс. Это цикл: бизнес-анализ → разработка → внедрение → обучение → тестирование → мониторинг. Каждое решение измеряется и улучшается — агент становится частью бизнес-модели.'
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const quizModal = document.getElementById('quiz-modal');
+        const quizQuestionText = document.getElementById('quiz-question-text');
+        const quizOptions = document.getElementById('quiz-options');
+        const quizExplanation = document.getElementById('quiz-explanation');
+        const quizExplanationIcon = document.getElementById('quiz-explanation-icon');
+        const quizExplanationTitle = document.getElementById('quiz-explanation-title');
+        const quizExplanationText = document.getElementById('quiz-explanation-text');
+        const quizNextBtn = document.getElementById('quiz-next-btn');
+        const quizProgress = document.getElementById('quiz-progress');
+        const quizProgressBar = document.getElementById('quiz-progress-bar');
+        const quizQuestionBlock = document.getElementById('quiz-question-block');
+        const quizResultBlock = document.getElementById('quiz-result-block');
+
+        function openQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+            quizModal.classList.remove('hidden');
+            quizModal.classList.add('flex');
+            quizQuestionBlock.classList.remove('hidden');
+            quizQuestionBlock.classList.add('flex');
+            quizResultBlock.classList.add('hidden');
+            quizResultBlock.classList.remove('flex');
+            renderQuestion();
+            // Пауза видео на время теста
+            if (player) player.pause().catch(() => {});
+        }
+
+        function closeQuiz() {
+            quizModal.classList.add('hidden');
+            quizModal.classList.remove('flex');
+        }
+
+        function renderQuestion() {
+            quizAnswered = false;
+            const cur = quizQuestions[quizIndex];
+            quizProgress.textContent = `Вопрос ${quizIndex + 1} из ${quizQuestions.length}`;
+            quizProgressBar.style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
+            quizQuestionText.textContent = cur.q;
+
+            quizOptions.innerHTML = '';
+            cur.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'quiz-option text-left bg-white/5 hover:bg-white/10 border border-white/10 rounded-[16px] md:rounded-2xl p-3 md:p-5 flex items-start gap-3 md:gap-4 transition-all text-white';
+                btn.innerHTML = `
+                    <span class="quiz-option-letter shrink-0 w-7 h-7 md:w-9 md:h-9 rounded-full border border-white/20 flex items-center justify-center text-[11px] md:text-sm font-black">${String.fromCharCode(65 + i)}</span>
+                    <span class="quiz-option-text text-[12px] md:text-base font-medium leading-snug pt-0.5 md:pt-1">${opt}</span>
+                `;
+                btn.addEventListener('click', () => handleAnswer(i, btn));
+                quizOptions.appendChild(btn);
+            });
+
+            quizExplanation.classList.add('hidden');
+            quizNextBtn.classList.add('hidden');
+        }
+
+        function handleAnswer(chosenIdx, btnEl) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const cur = quizQuestions[quizIndex];
+            const buttons = quizOptions.querySelectorAll('.quiz-option');
+            buttons.forEach((b, i) => {
+                b.disabled = true;
+                b.classList.remove('hover:bg-white/10');
+                if (i === cur.correct) {
+                    b.classList.remove('bg-white/5', 'border-white/10');
+                    b.classList.add('bg-solar/20', 'border-solar');
+                    const letter = b.querySelector('.quiz-option-letter');
+                    letter.classList.remove('border-white/20');
+                    letter.classList.add('bg-solar', 'text-black', 'border-solar');
+                } else if (i === chosenIdx) {
+                    b.classList.remove('bg-white/5', 'border-white/10');
+                    b.classList.add('bg-red-500/15', 'border-red-500/60');
+                    const letter = b.querySelector('.quiz-option-letter');
+                    letter.classList.remove('border-white/20');
+                    letter.classList.add('bg-red-500/80', 'text-white', 'border-red-500');
+                }
+            });
+
+            const isCorrect = chosenIdx === cur.correct;
+            if (isCorrect) quizScore++;
+
+            quizExplanation.classList.remove('hidden');
+            if (isCorrect) {
+                quizExplanationIcon.className = 'ph-fill ph-check-circle text-xl md:text-2xl text-solar';
+                quizExplanationTitle.textContent = 'Верно!';
+                quizExplanationTitle.className = 'font-black text-sm md:text-lg text-solar';
+            } else {
+                quizExplanationIcon.className = 'ph-fill ph-x-circle text-xl md:text-2xl text-red-400';
+                quizExplanationTitle.textContent = 'Неверно — вот как правильно';
+                quizExplanationTitle.className = 'font-black text-sm md:text-lg text-red-400';
+            }
+            quizExplanationText.textContent = cur.explanation;
+
+            quizNextBtn.classList.remove('hidden');
+            if (quizIndex === quizQuestions.length - 1) {
+                quizNextBtn.innerHTML = 'Посмотреть результат <i class="ph-bold ph-arrow-right ml-1"></i>';
+            } else {
+                quizNextBtn.innerHTML = 'Далее <i class="ph-bold ph-arrow-right ml-1"></i>';
+            }
+        }
+
+        function nextQuestion() {
+            if (!quizAnswered) return;
+            if (quizIndex < quizQuestions.length - 1) {
+                quizIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizQuestionBlock.classList.add('hidden');
+            quizQuestionBlock.classList.remove('flex');
+            quizResultBlock.classList.remove('hidden');
+            quizResultBlock.classList.add('flex');
+
+            const score = quizScore;
+            document.getElementById('quiz-result-score').textContent = score;
+
+            const resultIconWrap = document.getElementById('quiz-result-icon-wrap');
+            const resultIcon = document.getElementById('quiz-result-icon');
+            const resultTitle = document.getElementById('quiz-result-title');
+            const resultDesc = document.getElementById('quiz-result-desc');
+
+            let title, desc, iconClass, wrapClass;
+            if (score >= 9) {
+                title = 'Превосходно!';
+                desc = 'Вы точно мыслите как архитектор AI-стратегии. Знаете, как встроить AI в операционное ядро бизнеса.';
+                iconClass = 'ph-fill ph-trophy text-black';
+                wrapClass = 'bg-solar';
+            } else if (score >= 7) {
+                title = 'Отличный результат';
+                desc = 'Вы хорошо понимаете архитектуру AI-First компании и роль агентов. Остались небольшие пробелы — пересмотрите спорные моменты.';
+                iconClass = 'ph-fill ph-medal text-solar';
+                wrapClass = 'bg-solar/20 border-2 border-solar';
+            } else if (score >= 5) {
+                title = 'Неплохо, но есть над чем поработать';
+                desc = 'Основы вы уловили, но ключевые концепции — AI-First, AgentOps, индекс зрелости — требуют повторения.';
+                iconClass = 'ph-fill ph-chart-line-up text-solar';
+                wrapClass = 'bg-white/10 border-2 border-solar/50';
+            } else {
+                title = 'Стоит вернуться к материалу';
+                desc = 'Пересмотрите ключевые слайды про AI-агентов, RUN/CHANGE/DISRUPT и индекс зрелости — и попробуйте ещё раз.';
+                iconClass = 'ph-fill ph-book-open text-solar';
+                wrapClass = 'bg-white/10 border-2 border-white/20';
+            }
+
+            resultIconWrap.className = 'w-20 h-20 md:w-28 md:h-28 rounded-full flex items-center justify-center mb-5 md:mb-8 shadow-2xl ' + wrapClass;
+            resultIcon.className = iconClass + ' text-4xl md:text-6xl';
+            resultTitle.textContent = title;
+            resultDesc.textContent = desc;
+        }
+
+        document.getElementById('open-quiz-btn').addEventListener('click', openQuiz);
+        document.getElementById('quiz-close-btn').addEventListener('click', closeQuiz);
+        document.getElementById('quiz-finish-btn').addEventListener('click', closeQuiz);
+        document.getElementById('quiz-restart-btn').addEventListener('click', openQuiz);
+        quizNextBtn.addEventListener('click', nextQuestion);
     });
 </script>
 </body>
