@@ -1880,10 +1880,11 @@
 
             player.loadVideo(videoIds[slideIdx]).then(() => {
                 if (myToken !== loadToken) return; // более свежий запрос уже в пути
+                // Видео загружено — прячем лоадер сразу, чтобы он не перекрывал уже играющее видео
+                hideLoader();
                 return player.play();
             }).then(() => {
                 if (myToken !== loadToken) return;
-                hideLoader();
                 triggerOverlayAutoFade();
             }).catch((err) => {
                 if (myToken !== loadToken) return;
