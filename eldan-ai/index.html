@@ -104,15 +104,6 @@
             line-height: 1.1;
         }
 
-        .logo span {
-            display: block;
-            font-size: 0.75rem;
-            font-family: var(--font-sans);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
         .nav-links {
             display: flex;
             gap: 24px;
@@ -176,10 +167,9 @@
         }
         
         .btn-main:hover {
-            background: var(--accent);
-            color: #fff;
+            opacity: 0.85;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-secondary {
@@ -295,6 +285,12 @@
             color: var(--text-main);
             margin-bottom: 8px;
         }
+        
+        .card-strategy {
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+        }
 
         /* Grid Placements */
         .col-span-12 { grid-column: span 12; }
@@ -307,6 +303,12 @@
             .md-col-span-4 { grid-column: span 4; }
             .md-col-span-3 { grid-column: span 3; }
             .md-row-span-2 { grid-row: span 2; }
+            
+            .education-card {
+                flex-direction: row !important;
+                align-items: center !important;
+                padding: 24px !important;
+            }
         }
 
         /* Content Layouts */
@@ -365,6 +367,7 @@
             color: var(--accent);
         }
 
+        /* Roadmap List */
         .roadmap-list {
             display: flex;
             flex-direction: column;
@@ -384,6 +387,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid transparent;
+            gap: 24px;
         }
         
         .roadmap-item:hover {
@@ -395,9 +399,10 @@
         .roadmap-num {
             font-family: var(--font-sans);
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.25rem;
             color: var(--accent);
-            margin-right: 24px;
+            margin-right: 32px; /* Increased distance */
+            min-width: 32px;
         }
 
         .footer-links {
@@ -461,29 +466,90 @@
             cursor: pointer;
         }
 
-        .education-card {
-            flex-direction: row;
-        }
-
-        /* Mobile adjustments */
+        /* =========================================
+           MOBILE ADAPTIVE LAYOUT
+           ========================================= */
         @media (max-width: 768px) {
             header { padding: 16px 20px; }
             .nav-links { display: none; }
             .mobile-menu-btn { display: block; }
             .header-actions { gap: 8px; }
             .btn-main.header-btn { display: none; }
-            .slide { padding: 100px 16px 40px; }
-            .card { padding: 24px; }
-            .grid-container { display: flex; flex-direction: column; }
-            .roadmap-item { padding: 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
-            .roadmap-num { margin-right: 0; margin-bottom: 4px; }
-            .roadmap-arrow { display: none; }
             
-            /* Fix education cards for mobile */
-            .education-card { flex-direction: column !important; align-items: flex-start !important; text-align: left; gap: 16px; }
-            .education-card .card-icon { width: auto !important; margin-bottom: 0; }
-            .education-card > div { margin: 0 !important; }
-            .education-card .u-label { margin-left: 0 !important; margin-top: 8px; }
+            .slide { padding: 90px 16px 30px; }
+            
+            /* Slide 1 & 6 (Strategy overview & Education) - Make cards identical to roadmap items */
+            #slide-1 .grid-container, #slide-6 .grid-container {
+                display: flex;
+                flex-direction: column;
+                gap: 12px; /* Tight gap to fit everything */
+            }
+            #slide-1 .card, #slide-6 .card {
+                flex-direction: row;
+                align-items: center;
+                padding: 16px 20px;
+                gap: 16px;
+                text-align: left;
+                min-height: auto;
+                border-radius: 12px;
+            }
+            #slide-1 .card-icon, #slide-6 .card-icon {
+                font-size: 1.5rem !important;
+                margin-bottom: 0 !important;
+                width: 32px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            /* Text container inside card */
+            #slide-1 .card > div:nth-child(2), #slide-6 .card > div:nth-child(2) {
+                flex-grow: 1;
+                margin: 0 !important;
+            }
+            /* Hide bottom labels to save space */
+            #slide-1 .card > div:nth-child(3), #slide-6 .card > span.u-label {
+                display: none !important;
+            }
+            #slide-1 .card h3, #slide-6 .card h3 {
+                font-size: 1.1rem !important;
+                margin-bottom: 2px;
+            }
+            #slide-1 .card p, #slide-6 .card p {
+                font-size: 0.8rem;
+                margin-top: 0 !important;
+                line-height: 1.3;
+            }
+
+            /* Content Slides (2,3,4) - Icons First, then Text */
+            .split-layout {
+                display: flex;
+                flex-direction: column-reverse; /* Reverses DOM order: Icon stack goes to top */
+                gap: 24px;
+                text-align: center;
+            }
+            .split-layout > div:first-child {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .icon-stack {
+                margin-bottom: 0;
+                transform: scale(0.9);
+            }
+            
+            /* Slide 8 Roadmap spacing */
+            .roadmap-item { 
+                padding: 16px 20px; 
+                flex-direction: row; 
+                align-items: center; 
+                gap: 16px; 
+            }
+            .roadmap-num { 
+                margin-right: 16px; 
+                margin-bottom: 0; 
+                font-size: 1.1rem;
+                min-width: 24px; 
+            }
+            .roadmap-arrow { display: block; font-size: 1rem; }
         }
     </style>
 </head>
@@ -556,12 +622,12 @@
         <!-- Slide 1: Strategy & Roadmap Overview -->
         <section class="slide" id="slide-1">
             <div class="slide-inner">
-                <div style="margin-bottom: 8px;">
+                <div style="margin-bottom: 8px; text-align: center;">
                     <h2 class="u-display-l">Strategy & Roadmap</h2>
                 </div>
                 
                 <div class="grid-container">
-                    <div class="card col-span-12 md-col-span-6 md-row-span-2" onclick="goToSlide(2)" style="align-items: center; text-align: center; justify-content: center;">
+                    <div class="card card-strategy col-span-12 md-col-span-6 md-row-span-2" onclick="goToSlide(2)">
                         <i class="fa-solid fa-chess-knight card-icon" style="font-size: 3rem; margin-bottom: 16px;"></i>
                         <div>
                             <h3 class="u-display-s">AI Strategy</h3>
@@ -711,40 +777,40 @@
                 </div>
                 
                 <div class="grid-container">
-                    <div class="card col-span-12 md-col-span-6 education-card" style="align-items: center; padding: 24px;">
-                        <i class="fa-solid fa-user-tie card-icon" style="margin:0; width: 32px; text-align: center; flex-shrink: 0;"></i>
-                        <div style="flex-grow: 1; margin: 0 16px;">
+                    <div class="card col-span-12 md-col-span-6 education-card">
+                        <i class="fa-solid fa-user-tie card-icon"></i>
+                        <div>
                             <h3 style="font-family: var(--font-serif); font-size: 1.25rem;">Executive Management</h3>
                             <p class="u-paragraph-s">Strategic leadership in AI transformation</p>
                         </div>
-                        <span class="u-label" style="color: var(--accent); flex-shrink: 0;">Join <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="u-label" style="color: var(--accent); margin-left: auto;">Join <i class="fa-solid fa-arrow-right"></i></span>
                     </div>
                     
-                    <div class="card col-span-12 md-col-span-6 education-card" style="align-items: center; padding: 24px;">
-                        <i class="fa-solid fa-gears card-icon" style="margin:0; width: 32px; text-align: center; flex-shrink: 0;"></i>
-                        <div style="flex-grow: 1; margin: 0 16px;">
+                    <div class="card col-span-12 md-col-span-6 education-card">
+                        <i class="fa-solid fa-gears card-icon"></i>
+                        <div>
                             <h3 style="font-family: var(--font-serif); font-size: 1.25rem;">Process Automation</h3>
                             <p class="u-paragraph-s">Automating business workflows with AI agents</p>
                         </div>
-                        <span class="u-label" style="color: var(--accent); flex-shrink: 0;">Join <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="u-label" style="color: var(--accent); margin-left: auto;">Join <i class="fa-solid fa-arrow-right"></i></span>
                     </div>
                     
-                    <div class="card col-span-12 md-col-span-6 education-card" style="align-items: center; padding: 24px;">
-                        <i class="fa-solid fa-box-open card-icon" style="margin:0; width: 32px; text-align: center; flex-shrink: 0;"></i>
-                        <div style="flex-grow: 1; margin: 0 16px;">
+                    <div class="card col-span-12 md-col-span-6 education-card">
+                        <i class="fa-solid fa-box-open card-icon"></i>
+                        <div>
                             <h3 style="font-family: var(--font-serif); font-size: 1.25rem;">Product Development</h3>
                             <p class="u-paragraph-s">Building products using AI</p>
                         </div>
-                        <span class="u-label" style="color: var(--accent); flex-shrink: 0;">Join <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="u-label" style="color: var(--accent); margin-left: auto;">Join <i class="fa-solid fa-arrow-right"></i></span>
                     </div>
                     
-                    <div class="card col-span-12 md-col-span-6 education-card" style="align-items: center; padding: 24px;">
-                        <i class="fa-solid fa-laptop-code card-icon" style="margin:0; width: 32px; text-align: center; flex-shrink: 0;"></i>
-                        <div style="flex-grow: 1; margin: 0 16px;">
+                    <div class="card col-span-12 md-col-span-6 education-card">
+                        <i class="fa-solid fa-laptop-code card-icon"></i>
+                        <div>
                             <h3 style="font-family: var(--font-serif); font-size: 1.25rem;">AI Engineering</h3>
                             <p class="u-paragraph-s">Designing and deploying AI systems</p>
                         </div>
-                        <span class="u-label" style="color: var(--accent); flex-shrink: 0;">Join <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="u-label" style="color: var(--accent); margin-left: auto;">Join <i class="fa-solid fa-arrow-right"></i></span>
                     </div>
                 </div>
             </div>
@@ -770,7 +836,7 @@
                     <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
                 </div>
                 
-                <p class="u-label" style="margin-top: 40px;">&copy; 2026 Eldan AI Technologies. All rights reserved.</p>
+                <p class="u-label" style="margin-top: 40px;">&copy; 2026 Eldan AI. All rights reserved.</p>
             </div>
         </section>
 
@@ -783,7 +849,7 @@
                 
                 <div class="roadmap-list">
                     <div class="roadmap-item" onclick="goToSlide(2)">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
                             <span class="roadmap-num">01.</span>
                             <div>
                                 <h3 class="u-display-s">AI Strategy</h3>
@@ -794,7 +860,7 @@
                     </div>
                     
                     <div class="roadmap-item" onclick="goToSlide(3)">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
                             <span class="roadmap-num">02.</span>
                             <div>
                                 <h3 class="u-display-s">AI Platform</h3>
@@ -805,7 +871,7 @@
                     </div>
                     
                     <div class="roadmap-item" onclick="goToSlide(4)">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
                             <span class="roadmap-num">03.</span>
                             <div>
                                 <h3 class="u-display-s">AI Employees</h3>
@@ -816,7 +882,7 @@
                     </div>
                     
                     <div class="roadmap-item" onclick="goToSlide(5)">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
                             <span class="roadmap-num">04.</span>
                             <div>
                                 <h3 class="u-display-s">AI Products</h3>
@@ -827,7 +893,7 @@
                     </div>
                     
                     <div class="roadmap-item" onclick="goToSlide(6)">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
                             <span class="roadmap-num">05.</span>
                             <div>
                                 <h3 class="u-display-s">AI Education</h3>
